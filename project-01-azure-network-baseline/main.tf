@@ -1,7 +1,15 @@
+############################################
+# Resource Group
+############################################
+
 resource "azurerm_resource_group" "rg" {
   name     = var.resource_group_name
   location = var.location
 }
+
+############################################
+# Virtual Network
+############################################
 
 resource "azurerm_virtual_network" "vnet" {
   name                = var.vnet_name
@@ -10,6 +18,10 @@ resource "azurerm_virtual_network" "vnet" {
   address_space       = var.vnet_address_space
 }
 
+############################################
+# Subnet
+############################################
+
 resource "azurerm_subnet" "subnet" {
   name                 = var.subnet_name
   resource_group_name  = azurerm_resource_group.rg.name
@@ -17,11 +29,19 @@ resource "azurerm_subnet" "subnet" {
   address_prefixes     = var.subnet_address_prefixes
 }
 
+############################################
+# Network Security Group
+############################################
+
 resource "azurerm_network_security_group" "nsg" {
   name                = var.nsg_name
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 }
+
+############################################
+# Allow SSH Rule
+############################################
 
 resource "azurerm_network_security_rule" "allow_ssh" {
   name                        = "Allow-SSH"
@@ -37,6 +57,10 @@ resource "azurerm_network_security_rule" "allow_ssh" {
   network_security_group_name = azurerm_network_security_group.nsg.name
 }
 
+############################################
+# Public IP
+############################################
+
 resource "azurerm_public_ip" "public_ip" {
   name                = var.public_ip_name
   location            = azurerm_resource_group.rg.location
@@ -45,54 +69,60 @@ resource "azurerm_public_ip" "public_ip" {
   sku                 = "Standard"
 }
 
-resource "azurerm_network_interface" "nic" {
-  name                = var.nic_name
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+############################################
+# NETWORK INTERFACE (COMMENTED OUT)
+############################################
 
-  ip_configuration {
-    name                          = "internal"
-    subnet_id                     = azurerm_subnet.subnet.id
-    private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.public_ip.id
-  }
-}
+# resource "azurerm_network_interface" "nic" {
+#   name                = var.nic_name
+#   location            = azurerm_resource_group.rg.location
+#   resource_group_name = azurerm_resource_group.rg.name
+#
+#   ip_configuration {
+#     name                          = "internal"
+#     subnet_id                     = azurerm_subnet.subnet.id
+#     private_ip_address_allocation = "Dynamic"
+#     public_ip_address_id          = azurerm_public_ip.public_ip.id
+#   }
+# }
 
-resource "azurerm_network_interface_security_group_association" "nic_nsg_assoc" {
-  network_interface_id      = azurerm_network_interface.nic.id
-  network_security_group_id = azurerm_network_security_group.nsg.id
-}
+############################################
+# NIC NSG ASSOCIATION (COMMENTED OUT)
+############################################
 
-resource "azurerm_linux_virtual_machine" "vm" {
-  name                = var.vm_name
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
-  size                = var.vm_size
-  admin_username      = var.admin_username
+# resource "azurerm_network_interface_security_group_association" "nic_nsg_assoc" {
+#   network_interface_id      = azurerm_network_interface.nic.id
+#   network_security_group_id = azurerm_network_security_group.nsg.id
+# }
 
-  disable_password_authentication = true
+############################################
+# LINUX VM (COMMENTED OUT)
+############################################
 
-  network_interface_ids = [
-    azurerm_network_interface.nic.id
-  ]
-
-  admin_ssh_key {
-    username   = var.admin_username
-    public_key = var.ssh_public_key
-  }
-
-  os_disk {
-    caching              = "ReadWrite"
-    storage_account_type = "Standard_LRS"
-    name                 = "${var.vm_name}-osdisk"
-  }
-
-  source_image_reference {
-    publisher = "Canonical"
-    offer     = "0001-com-ubuntu-server-jammy"
-    sku       = "22_04-lts-gen2"
-    version   = "latest"
-  }
-
-  computer_name = var.vm_name
-}
+# resource "azurerm_linux_virtual_machine" "vm" {
+#   name                = var.vm_name
+#   resource_group_name = azurerm_resource_group.rg.name
+#   location            = azurerm_resource_group.rg.location
+#   size                = var.vm_size
+#   admin_username      = var.admin_username
+#   network_interface_ids = [
+#     azurerm_network_interface.nic.id,
+#   ]
+#
+#   admin_ssh_key {
+#     username   = var.admin_username
+#     public_key = var.ssh_public_key
+#   }
+#
+#   os_disk {
+#     caching              = "ReadWrite"
+#     storage_account_type = "Standard_LRS"
+#   }
+#
+#   source_image_reference {
+#     publisher = "Canonical"
+#     offer     = "0001-com-ubuntu-server-jammy"
+#     sku       = "22_04-lts"
+#     version   = "latest"
+#   }
+# }
