@@ -1,0 +1,24 @@
+{
+  "name": "Azure Cloud Projects",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "features": {
+    "ghcr.io/devcontainers/features/azure-cli:1": {},
+    "ghcr.io/devcontainers/features/terraform:1": {},
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "hashicorp.terraform",
+        "ms-azuretools.vscode-azureresourcegroups",
+        "ms-vscode.azurecli"
+      ],
+      "settings": {
+        "terraform.languageServer.enable": true,
+        "editor.formatOnSave": true
+      }
+    }
+  },
+  "postCreateCommand": "az version && terraform version",
+  "remoteUser": "vscode"
+}
