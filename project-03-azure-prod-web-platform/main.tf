@@ -146,7 +146,7 @@ resource "azurerm_linux_virtual_machine_scale_set" "web" {
 
   admin_ssh_key {
     username   = "azureuser"
-    public_key = file("~/.ssh/id_rsa.pub")
+    public_key = file("/home/vscode/.ssh/id_rsa.pub")
   }
 
   source_image_reference {
