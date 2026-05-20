@@ -9,3 +9,15 @@ variable "location" {
   type        = string
   default     = "East US"
 }
+
+variable "admin_username" {
+  description = "Admin username for the Linux VM"
+  type        = string
+  default     = "azureuser"
+}
+
+variable "alert_email" {
+  description = "Email address for Azure Monitor alerts"
+  type        = string
+  default     = "simpson.xavier2423@gmail.com"
+}
