@@ -1,0 +1,43 @@
+name: Azure Terraform CI/CD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "project-05-azure-terraform-cicd/**"
+      - ".github/workflows/azure-terraform-cicd.yml"
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "project-05-azure-terraform-cicd/**"
+
+permissions:
+  contents: read
+
+jobs:
+  terraform:
+    name: Terraform Validation
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: project-05-azure-terraform-cicd
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Format Check
+        run: terraform fmt -check
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
